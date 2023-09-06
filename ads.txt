@@ -1,0 +1,10 @@
+altitude-arena.com, NOKNP06M114O7ABSG3B0G2C3NK, DIRECT
+siprocalads.com, NOKNP06M114O7ABSG3B0G2C3NK, DIRECT
+google.com, pub-8287745738232918, DIRECT, f08c47fec0942fa0
+consumable.com, 2001499, DIRECT, aefcd3d2f45b5070
+adswizz.com, consumable, DIRECT
+adswizz.com, 52593, RESELLER
+tritondigital.com, 106423, DIRECT, 19b4454d0b87b58b
+rubiconproject.com, 9755, RESELLER, 0bfd66d529a55807  
+rubiconproject.com, 24856, DIRECT, 0bfd66d529a55807
+supply.colossusssp.com, 442, RESELLER, 6c5b49d96ec1b458
