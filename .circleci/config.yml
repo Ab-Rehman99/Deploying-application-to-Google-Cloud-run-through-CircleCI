@@ -40,3 +40,39 @@ jobs:
             gcloud --quiet config set project "${GCE_PROJECT_NAME}"
             gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
       # Build and tag the Docker image
+       - run:
+          name: Build and tag Docker image
+          command: |
+            docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${CIRCLE_SHA1} .
+            docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${CIRCLE_SHA1} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+       # Authenticate Docker to use Artifact Registry
+      - run:
+          name: Authenticate Docker to use Artifact Registry
+          command: |
+            source /home/circleci/google-cloud-sdk/path.bash.inc
+            gcloud auth configure-docker us-central1-docker.pkg.dev
+      # Push the Docker image to Artifact Registry
+      - run:
+          name: Push Docker image to Artifact Registry
+          command: |
+            source /home/circleci/google-cloud-sdk/path.bash.inc  
+
+            # Configure gcloud
+            echo $GCE_key | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project "${GCE_PROJECT_NAME}"
+            gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+
+            docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${CIRCLE_SHA1}
+            docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+            
+      # Deploy to Google Cloud Run
+      - run:
+          name: Deploy to Google Cloud Run
+          command: |
+            source /home/circleci/google-cloud-sdk/path.bash.inc
+            gcloud run deploy simple-html-server \
+              --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
+              --platform managed \
+              --port 80 \
+              --region us-central1 \
+              --allow-unauthenticated
