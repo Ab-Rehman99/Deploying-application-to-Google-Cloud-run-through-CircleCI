@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-
+env:
+    GCE_key: ${{ secrets.GCE_key }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -17,9 +18,11 @@ jobs:
         run: |
           echo "export GKE_CLUSTER_NAME=kcluster" >> $GITHUB_ENV
           echo "export GCE_PROJECT_NAME=ab-project-2190" >> $GITHUB_ENV
+
           curl -sSL https://sdk.cloud.google.com | bash
           source $HOME/google-cloud-sdk/path.bash.inc
-          gcloud auth activate-service-account --key-file=<(echo ${{ secrets.GCE_key }})
+
+          echo "$GCE_key" | gcloud auth activate-service-account --key-file=-
           gcloud config set project "${GCE_PROJECT_NAME}"
           gcloud auth configure-docker us-central1-docker.pkg.dev
 
