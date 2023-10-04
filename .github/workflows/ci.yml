@@ -4,7 +4,7 @@ on:
     branches:
     - main
 env:
-  GCE_key: xxxxm" }
+  GCE_key: ${{ secrets.GCE_key }}
 jobs:
   build-and-deploy:
     if: github.ref == 'refs/heads/main'
@@ -26,22 +26,30 @@ jobs:
         echo "export GCE_PROJECT_NAME=ab-project-2190" >> $BASH_ENV
     - name: Setup google-cloud-sdk
       run: "source /home/circleci/google-cloud-sdk/path.bash.inc  \n\n# Configure gcloud\necho $GCE_key | gcloud auth activate-service-account --key-file=-\ngcloud --quiet config set project \"${GCE_PROJECT_NAME}\"\ngcloud --quiet auth configure-docker us-central1-docker.pkg.dev"
-    - name: Build and tag Docker image
-      run: |-
-        docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
-        docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
-    - name: Authenticate Docker to use Artifact Registry
-      run: |-
-        source /home/circleci/google-cloud-sdk/path.bash.inc
-        gcloud auth configure-docker us-central1-docker.pkg.dev
-    - name: Push Docker image to Artifact Registry
-      run: "source /home/circleci/google-cloud-sdk/path.bash.inc  \n\n# Configure gcloud\necho $GCE_key | gcloud auth activate-service-account --key-file=-\ngcloud --quiet config set project \"${GCE_PROJECT_NAME}\"\ngcloud --quiet auth configure-docker us-central1-docker.pkg.dev\n\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1"
-    - name: Deploy to Google Cloud Run
-      run: |-
-        source /home/circleci/google-cloud-sdk/path.bash.inc
-        gcloud run deploy simple-html-server \
-          --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
-          --platform managed \
-          --port 80 \
-          --region us-central1 \
-          --allow-unauthenticated
+
+
+
+
+
+
+
+
+    # - name: Build and tag Docker image
+    #   run: |-
+    #     docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
+    #     docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+    # - name: Authenticate Docker to use Artifact Registry
+    #   run: |-
+    #     source /home/circleci/google-cloud-sdk/path.bash.inc
+    #     gcloud auth configure-docker us-central1-docker.pkg.dev
+    # - name: Push Docker image to Artifact Registry
+    #   run: "source /home/circleci/google-cloud-sdk/path.bash.inc  \n\n# Configure gcloud\necho $GCE_key | gcloud auth activate-service-account --key-file=-\ngcloud --quiet config set project \"${GCE_PROJECT_NAME}\"\ngcloud --quiet auth configure-docker us-central1-docker.pkg.dev\n\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1"
+    # - name: Deploy to Google Cloud Run
+    #   run: |-
+    #     source /home/circleci/google-cloud-sdk/path.bash.inc
+    #     gcloud run deploy simple-html-server \
+    #       --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
+    #       --platform managed \
+    #       --port 80 \
+    #       --region us-central1 \
+    #       --allow-unauthenticated
