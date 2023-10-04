@@ -4,7 +4,7 @@ on:
     branches:
     - main
 env:
-  GCE_key: xxxxm" }
+  GCE_key: ${{ secrets.GCE_key }}
 jobs:
   build-and-deploy:
     if: github.ref == 'refs/heads/main'
