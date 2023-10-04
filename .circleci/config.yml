@@ -40,7 +40,7 @@ jobs:
             gcloud --quiet config set project "${GCE_PROJECT_NAME}"
             gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
       # Build and tag the Docker image
-       - run:
+      - run:
           name: Build and tag Docker image
           command: |
             docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${CIRCLE_SHA1} .
