@@ -1,0 +1,47 @@
+name: Ab-Rehman99/circleCI-with-cloud-run/ci
+on:
+  push:
+    branches:
+    - main
+env:
+  GCE_key: xxxxm" }
+jobs:
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: "/go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}"
+    runs-on: ubuntu-latest
+    container:
+      image: gcr.io/ab-project-2190/ci:latest
+      credentials:
+        username: _json_key
+        password: "$GCE_key"
+    steps:
+#     # 'setup_remote_docker' was not transformed because there is no suitable equivalent in GitHub Actions
+    - uses: actions/checkout@v4.1.0
+    - name: Setup env
+      run: |-
+        echo "export GKE_CLUSTER_NAME=kcluster" >> $BASH_ENV
+        echo "export GCE_PROJECT_NAME=ab-project-2190" >> $BASH_ENV
+    - name: Setup google-cloud-sdk
+      run: "source /home/circleci/google-cloud-sdk/path.bash.inc  \n\n# Configure gcloud\necho $GCE_key | gcloud auth activate-service-account --key-file=-\ngcloud --quiet config set project \"${GCE_PROJECT_NAME}\"\ngcloud --quiet auth configure-docker us-central1-docker.pkg.dev"
+    - name: Build and tag Docker image
+      run: |-
+        docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
+        docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+    - name: Authenticate Docker to use Artifact Registry
+      run: |-
+        source /home/circleci/google-cloud-sdk/path.bash.inc
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+    - name: Push Docker image to Artifact Registry
+      run: "source /home/circleci/google-cloud-sdk/path.bash.inc  \n\n# Configure gcloud\necho $GCE_key | gcloud auth activate-service-account --key-file=-\ngcloud --quiet config set project \"${GCE_PROJECT_NAME}\"\ngcloud --quiet auth configure-docker us-central1-docker.pkg.dev\n\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}\ndocker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1"
+    - name: Deploy to Google Cloud Run
+      run: |-
+        source /home/circleci/google-cloud-sdk/path.bash.inc
+        gcloud run deploy simple-html-server \
+          --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
+          --platform managed \
+          --port 80 \
+          --region us-central1 \
+          --allow-unauthenticated
