@@ -16,7 +16,7 @@ jobs:
 
       - name: Set up Google Cloud SDK
         run: |
-          echo "export GCE_PROJECT_NAME=ab-project-2190" >> $GITHUB_ENV
+          #echo "export GCE_PROJECT_NAME=ab-project-2190" >> $GITHUB_ENV
 
           # Debugging: Print the value of GCE_PROJECT_NAME
           echo "GCE_PROJECT_NAME: $GCE_PROJECT_NAME"
@@ -34,10 +34,10 @@ jobs:
       - name: List Google Cloud Configurations
         run: gcloud config list
 
-      # - name: Build and Tag Docker Image
-      #   run: |
-      #     docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
-      #     docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+      - name: Build and Tag Docker Image
+        run: |
+          docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
+          docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest2
 
       # - name: Authenticate Docker to Use Artifact Registry
       #   run: |
