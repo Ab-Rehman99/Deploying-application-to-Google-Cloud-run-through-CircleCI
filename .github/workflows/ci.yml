@@ -66,17 +66,11 @@ jobs:
           docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}
           docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest2
 
-
-      # - name: Push Docker Image to Artifact Registry
-      #   run: |
-      #     docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}
-      #     docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
-
-      # - name: Deploy to Google Cloud Run
-      #   run: |
-      #     gcloud run deploy simple-html-server \
-      #       --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
-      #       --platform managed \
-      #       --port 80 \
-      #       --region us-central1 \
-      #       --allow-unauthenticated
+      - name: Deploy to Google Cloud Run
+        run: |
+          gcloud run deploy simple-html-server \
+            --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest2 \
+            --platform managed \
+            --port 80 \
+            --region us-central1 \
+            --allow-unauthenticated
