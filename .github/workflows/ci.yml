@@ -16,16 +16,18 @@ jobs:
 
       - name: Set up Google Cloud SDK
         run: |
-          echo "export GKE_CLUSTER_NAME=kcluster" >> $GITHUB_ENV
           echo "export GCE_PROJECT_NAME=ab-project-2190" >> $GITHUB_ENV
 
+          # Install Google Cloud SDK
           curl -sSL https://sdk.cloud.google.com | bash
           source $HOME/google-cloud-sdk/path.bash.inc
 
-          echo "${{ secrets.GCE_KEY }}" | base64 --decode > keyfile.json
-          gcloud auth activate-service-account --key-file=keyfile.json
-          gcloud config set project "${GCE_PROJECT_NAME}"
-          gcloud auth configure-docker us-central1-docker.pkg.dev
+          # Configure Google Cloud SDK with the Service Account Key
+          echo "${{ secrets.GCE_KEY }}" > keyfile.json
+          gcloud auth activate-service-account --key-file=keyfile.json --project="${GCE_PROJECT_NAME}"
+          
+      - name: List Google Cloud Configurations
+        run: gcloud config list
 
       # - name: Build and Tag Docker Image
       #   run: |
