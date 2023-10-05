@@ -24,7 +24,7 @@ jobs:
 
           # Configure Google Cloud SDK with the Service Account Key
           echo $GCE_key | gcloud auth activate-service-account --key-file=-
-          gcloud --quiet config set project "${GCE_PROJECT_NAME}"
+          gcloud --quiet config set project $GCE_PROJECT_NAME
           gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
 
       - name: List Google Cloud Configurations
