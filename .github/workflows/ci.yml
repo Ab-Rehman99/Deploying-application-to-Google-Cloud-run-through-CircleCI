@@ -39,9 +39,33 @@ jobs:
           docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
           docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest2
 
-      # - name: Authenticate Docker to Use Artifact Registry
-      #   run: |
-      #     gcloud auth configure-docker us-central1-docker.pkg.dev
+      - name: Authenticate Docker to use Artifact Registry
+        run: |
+          # Set up Google Cloud SDK
+          source $HOME/google-cloud-sdk/path.bash.inc
+
+          # Authenticate Docker for Artifact Registry
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          # Set up Google Cloud SDK
+          source $HOME/google-cloud-sdk/path.bash.inc
+
+          # Authenticate with service account key
+          echo $GCE_key | gcloud auth activate-service-account --key-file=-
+
+          # Set the Google Cloud project
+          export GCE_PROJECT_NAME=ab-project-2190
+          gcloud --quiet config set project $GCE_PROJECT_NAME
+
+          # Configure Docker to use Artifact Registry
+          gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+
+          # Push Docker image to Artifact Registry with version and latest tag
+          docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}
+          docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest2
+
 
       # - name: Push Docker Image to Artifact Registry
       #   run: |
