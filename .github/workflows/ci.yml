@@ -22,29 +22,30 @@ jobs:
           curl -sSL https://sdk.cloud.google.com | bash
           source $HOME/google-cloud-sdk/path.bash.inc
 
-          echo "$GCE_key" | gcloud auth activate-service-account --key-file=-
+          echo "${{ secrets.GCE_KEY }}" | base64 --decode > keyfile.json
+          gcloud auth activate-service-account --key-file=keyfile.json
           gcloud config set project "${GCE_PROJECT_NAME}"
           gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      - name: Build and Tag Docker Image
-        run: |
-          docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
-          docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+      # - name: Build and Tag Docker Image
+      #   run: |
+      #     docker build -t us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} .
+      #     docker tag us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }} us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
 
-      - name: Authenticate Docker to Use Artifact Registry
-        run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev
+      # - name: Authenticate Docker to Use Artifact Registry
+      #   run: |
+      #     gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      - name: Push Docker Image to Artifact Registry
-        run: |
-          docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}
-          docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
+      # - name: Push Docker Image to Artifact Registry
+      #   run: |
+      #     docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:${{ github.sha }}
+      #     docker push us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1
 
-      - name: Deploy to Google Cloud Run
-        run: |
-          gcloud run deploy simple-html-server \
-            --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
-            --platform managed \
-            --port 80 \
-            --region us-central1 \
-            --allow-unauthenticated
+      # - name: Deploy to Google Cloud Run
+      #   run: |
+      #     gcloud run deploy simple-html-server \
+      #       --image us-central1-docker.pkg.dev/ab-project-2190/my-image/simple-html-server:latest1 \
+      #       --platform managed \
+      #       --port 80 \
+      #       --region us-central1 \
+      #       --allow-unauthenticated
