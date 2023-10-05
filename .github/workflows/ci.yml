@@ -18,12 +18,18 @@ jobs:
         run: |
           echo "export GCE_PROJECT_NAME=ab-project-2190" >> $GITHUB_ENV
 
+          # Debugging: Print the value of GCE_PROJECT_NAME
+          echo "GCE_PROJECT_NAME: $GCE_PROJECT_NAME"
+
           # Install Google Cloud SDK
           curl -sSL https://sdk.cloud.google.com | bash
           source $HOME/google-cloud-sdk/path.bash.inc
 
           # Configure Google Cloud SDK with the Service Account Key
           echo $GCE_key | gcloud auth activate-service-account --key-file=-
+
+          # Debugging: Print the current gcloud configuration
+          gcloud config list
           gcloud --quiet config set project $GCE_PROJECT_NAME
           gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
 
